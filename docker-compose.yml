@@ -1,0 +1,9 @@
+services:
+  database:
+    image: postgis/postgis
+    environment:
+      - POSTGRES_DB=dbname
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=pass
+
+  app
