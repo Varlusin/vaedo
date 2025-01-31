@@ -1,6 +1,6 @@
 FROM python:3.8-slim
 
-WORKDIR /app
+WORKDIR /vaedo
 
 RUN apt-get update && apt-get install -y \
     binutils \
@@ -16,7 +16,7 @@ COPY requirements.txt /app/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app
+COPY . /vaedo
 
 
 EXPOSE 8000
