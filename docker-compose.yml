@@ -1,5 +1,4 @@
-
-        services:
+services:
   database:
     image: postgis/postgis
     environment:
