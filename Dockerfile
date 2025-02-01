@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 
-COPY requirements.txt /app/
+COPY requirements.txt /vaedo/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
