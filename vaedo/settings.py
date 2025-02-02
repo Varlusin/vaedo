@@ -23,7 +23,7 @@ INSTALLED_APPS = [
     "rest_framework",
     # "rest_framework_gis",
 
-
+    'main',
     'futur',
 
 
@@ -88,14 +88,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# LANGUAGE_CODE = "en-us"
-
-# TIME_ZONE = "UTC"
-
-# USE_I18N = True
-
-# USE_TZ = True
-
 LANGUAGE_CODE = "en"
 
 TIME_ZONE = "UTC"
@@ -118,7 +110,11 @@ MODELTRANSLATION_LANGUAGES = ("en", "ru", "hy")
 
 
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
