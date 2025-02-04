@@ -9,6 +9,9 @@ from futur.serializers import MainFuturPrefatchSerializers, FuturSerializers
 # from rest_framework.viewsets import ReadOnlyModelViewSet
 
 
+from django.db import connection
+from pprint import pprint
+
 class MainFuturList(generics.ListAPIView):
     serializer_class = MainFuturPrefatchSerializers
 
@@ -18,7 +21,7 @@ class MainFuturList(generics.ListAPIView):
         names_field = f"names_{lang}"
 
         futur_queryset = Futur.objects.published().only(
-            names_field, "slug", "category_id"
+            names_field,"url", "slug", "category_id"
         )
 
         return (
@@ -29,10 +32,7 @@ class MainFuturList(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        print(response.data)
-
-        # response_data = {'futur': response.data}
-        # response.data = response_data
+        print(connection.queries)
         return response
 
 

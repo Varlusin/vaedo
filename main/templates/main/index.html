@@ -112,7 +112,6 @@
 
 
     {% load i18n %}
-
 <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
     <input name="next" type="hidden" value="{{ redirect_to }}">
     <select name="language">
@@ -127,6 +126,49 @@
     </select>
     <input type="submit" value="Go">
 </form>
+
+
+
+
+<select id="language-selector">
+    <option value="en">English</option>
+    <option value="hy">հայերեն</option>
+    <option value="ru">руски</option>
+</select>
+
+<script>
+    document.getElementById("language-selector").addEventListener("change", function () {
+        const selectedLanguage = this.value;
+
+        fetch("{% url 'set_language' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": getCookie("csrftoken") // Required for security
+            },
+            body: `language=${selectedLanguage}`
+        }).then(() => {
+            location.reload(); // Reload to apply the language change
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+</script>
+
+
 
 
     <!-- MAP -->

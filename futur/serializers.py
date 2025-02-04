@@ -6,7 +6,7 @@ from rest_framework import serializers
 class MainFuturSerializers(serializers.ModelSerializer):
     class Meta:
         model = Futur
-        fields = ("names", "slug")
+        fields = ("names", "slug", "url")
 
 
 class MainFuturPrefatchSerializers(serializers.ModelSerializer):

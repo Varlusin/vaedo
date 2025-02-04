@@ -3,7 +3,7 @@ from django.db.models.signals import pre_save
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from django.urls import reverse
-
+from django.core.validators import URLValidator
 
 class TypefuturQuerySet(models.QuerySet):
     def published(self):
@@ -20,15 +20,9 @@ class FuturQuerySet(models.QuerySet):
     def by_slug(self, slug):
         return self.published().filter(slug=slug)
 
-    # def by_category(self, category_slug):
-    #     return self.published().filter(category__slug=category_slug)
 
 
 class Typefutur(models.Model):
-
-    # class TypefuturObjects(models.Manager):
-    #     def get_queryset(self) -> models.QuerySet:
-    #         return super().get_queryset().filter(publish=True )
 
     futurtype = models.CharField(max_length=50, unique=True, null=False)
     slug = models.SlugField(max_length=50, unique=True, null=False)
@@ -49,11 +43,16 @@ class Futur(models.Model):
         to=Typefutur, on_delete=models.PROTECT, related_name="futur"
     )
     names = models.CharField(max_length=50, unique=True)
-    descriptions = models.TextField(null=True)
+    descriptions = models.TextField(null=True, blank=True)
     slug = models.SlugField(max_length=50, unique=True, null=False)
     img = models.ImageField(
         upload_to="futur_img", null=True, blank=True, default="default.jpg"
     )
+    url = models.TextField(
+        validators=[URLValidator()],
+        max_length = 200, 
+        blank=True, 
+        null=True, ) 
     publish = models.BooleanField()
 
     objects = FuturQuerySet.as_manager()

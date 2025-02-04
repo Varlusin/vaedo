@@ -16,6 +16,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+
+    "corsheaders", # for request diferent origin
     "modeltranslation",
     'django.contrib.admin',  # optional
     'django.contrib.postgres',
@@ -34,6 +36,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
 
     "django.middleware.locale.LocaleMiddleware",  ##lenguage
+    "corsheaders.middleware.CorsMiddleware", ## for request diferent origin
     
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -117,6 +120,9 @@ MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CORS_ORIGIN_ALLOW_ALL=True
+CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 
 REST_FRAMEWORK = { 
     'DEFAULT_PERMISSION_CLASSES' : [ 
