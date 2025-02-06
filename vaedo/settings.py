@@ -1,11 +1,18 @@
 import os
+import environ
 from pathlib import Path
 
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = "django-insecure-!8!cp+hev3gttae)sh2ugwmtb_un2raavwcn!!@icg*#y_yf#l"
+DEBUG = env('DEBUG')
+SECRET_KEY = env('SECRET_KEY')
 
-DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.10.18', '127.0.0.1']
 
@@ -69,10 +76,10 @@ WSGI_APPLICATION = "vaedo.wsgi.application"
 DATABASES = {
      'default': {
          "ENGINE": "django.contrib.gis.db.backends.postgis",
-         'HOST': os.environ.get('DB_HOST'),
-         'NAME': os.environ.get('DB_NAME'),
-         'USER': os.environ.get('DB_USER'),
-         'PASSWORD': os.environ.get('DB_PASS')
+         'HOST': env('DB_HOST'),
+         'NAME': env('DB_NAME'),
+         'USER': env('DB_USER'),
+         'PASSWORD': env('DB_PASS')
      }
 }
 

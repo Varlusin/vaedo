@@ -2,9 +2,9 @@ services:
   database:
     image: postgis/postgis
     environment:
-      - POSTGRES_DB=dbname
-      - POSTGRES_USER=dbuser
-      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
 
   app:
     build:
@@ -13,12 +13,6 @@ services:
       - "8000:8000"
     volumes:
       - .:/vaedo
-    environment:
-      - DB_HOST=database
-      - DB_NAME=dbname
-      - DB_USER=dbuser
-      - DB_PASS=pass
-
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
     depends_on:
