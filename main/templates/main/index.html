@@ -143,8 +143,8 @@
 
     <footer class="footer">
         <div class="container">
-            <div class="footer-grig">
-                <div class="footer-column">
+            <div class="footer-grig" data-js-futur>
+                {% comment %} <div class="footer-column">
                     <div class="column-title">
                         Let's do it toghether
                     </div>
@@ -170,7 +170,7 @@
                     <a href="#" class="footer-column-link">Glovo for Partners</a>
                     <a href="#" class="footer-column-link">Couriers</a>
                     <a href="#" class="footer-column-link">Glovo busines</a>
-                </div>
+                </div> {% endcomment %}
             </div>
 
         </div>
@@ -182,6 +182,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="{% static '/main/js/MapApi.js' %}" type="module"></script>
+    <script src="{% static '/main/js/Futur.js' %}" type="module"></script>
     <script src="{% static '/main/js/script.js' %}" type="module"></script>
 
 </body>
