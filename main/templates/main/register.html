@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="{% static '/main/css/style_register.css' %}" />
+</head>
+<body>
+    <div class="container">
+    <div class="form-container" data-js-registerroot>
+    </div>
+    <script src="{% static '/main/js/RenderProfileForm.js' %}" type="module"></script>
+    <script src="{% static '/main/js/register_script.js' %}" type="module"></script>
+</body>
+</html>

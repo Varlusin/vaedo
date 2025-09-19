@@ -1,0 +1,92 @@
+/* Հիմնական ձևավորման համար */
+.profile-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-form__header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-form__title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Input դաշտերի ձևավորում */
+.profile-form__form input[type="text"],
+.profile-form__form input[type="email"],
+.profile-form__form input[type="password"] {
+    width: calc(100% - 40px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.profile-form__form input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Գաղտնաբառի դաշտի ձևավորում */
+.password-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-field input {
+    flex: 1;
+}
+
+.password-field .toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #007bff;
+}
+
+.password-field .toggle-password:hover {
+    color: #0056b3;
+}
+
+/* Submit կոճակի ձևավորում */
+.profile-form__form button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.profile-form__form button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Error հաղորդագրությունների ձևավորում */
+input:invalid {
+    border-color: #dc3545;
+}
+
+input:invalid:focus {
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+}
