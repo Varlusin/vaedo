@@ -1,0 +1,190 @@
+[
+    {
+        "model": "futur.typefutur",
+        "pk": 1,
+        "fields": {
+            "futurtype": "Follow us",
+            "futurtype_en": "Follow us",
+            "futurtype_ru": "Мы в социальных сетях",
+            "futurtype_hy": "Հետևեք մեզ",
+            "slug": "follow-us",
+            "publish": true
+        }
+    },
+    {
+        "model": "futur.typefutur",
+        "pk": 2,
+        "fields": {
+            "futurtype": "Links of interest",
+            "futurtype_en": "Links of interest",
+            "futurtype_ru": "Полезные ссылки",
+            "futurtype_hy": "Հետաքրքիր հղումներ",
+            "slug": "links-of-interest",
+            "publish": true
+        }
+    },
+    {
+        "model": "futur.typefutur",
+        "pk": 3,
+        "fields": {
+            "futurtype": "Let’s do it together",
+            "futurtype_en": "Let’s do it together",
+            "futurtype_ru": "Присоединиться к нам",
+            "futurtype_hy": "Միանալ մեր թիմին",
+            "slug": "lets-do-it-together",
+            "publish": true
+        }
+    },
+    {
+        "model": "futur.futur",
+        "pk": 1,
+        "fields": {
+            "category": 1,
+            "names": "instagram",
+            "names_en": "instagram",
+            "names_ru": "instagram",
+            "names_hy": "instagram",
+            "descriptions": null,
+            "descriptions_en": null,
+            "descriptions_ru": null,
+            "descriptions_hy": null,
+            "slug": "instagram",
+            "img": "default.jpg",
+            "url": "https://www.instagram.com/",
+            "publish": true
+        }
+    },
+    {
+        "model": "futur.futur",
+        "pk": 2,
+        "fields": {
+            "category": 1,
+            "names": "Twitter",
+            "names_en": "Twitter",
+            "names_ru": "Twitter",
+            "names_hy": "Twitter",
+            "descriptions": null,
+            "descriptions_en": null,
+            "descriptions_ru": null,
+            "descriptions_hy": null,
+            "slug": "twitter",
+            "img": "default.jpg",
+            "url": "https://x.com/",
+            "publish": true
+        }
+    },
+    {
+        "model": "futur.futur",
+        "pk": 3,
+        "fields": {
+            "category": 1,
+            "names": "Facebook",
+            "names_en": "Facebook",
+            "names_ru": "Facebook",
+            "names_hy": "Facebook",
+            "descriptions": null,
+            "descriptions_en": null,
+            "descriptions_ru": null,
+            "descriptions_hy": null,
+            "slug": "facebook",
+            "img": "default.jpg",
+            "url": "https://www.facebook.com/",
+            "publish": true
+        }
+    },
+    {
+        "model": "futur.futur",
+        "pk": 4,
+        "fields": {
+            "category": 2,
+            "names": "Security",
+            "names_en": "Security",
+            "names_ru": "Безопасность",
+            "names_hy": "Անվտանգություն",
+            "descriptions": null,
+            "descriptions_en": null,
+            "descriptions_ru": null,
+            "descriptions_hy": null,
+            "slug": "security",
+            "img": "default.jpg",
+            "url": "http://127.0.0.1:8000/futur/security/",
+            "publish": true
+        }
+    },
+    {
+        "model": "futur.futur",
+        "pk": 5,
+        "fields": {
+            "category": 2,
+            "names": "Contact us",
+            "names_en": "Contact us",
+            "names_ru": "Связаться с нами",
+            "names_hy": "Կապվեք մեզ հետ",
+            "descriptions": null,
+            "descriptions_en": null,
+            "descriptions_ru": null,
+            "descriptions_hy": null,
+            "slug": "contact-us",
+            "img": "default.jpg",
+            "url": "http://127.0.0.1:8000/futur/contact-us/",
+            "publish": true
+        }
+    },
+    {
+        "model": "futur.futur",
+        "pk": 6,
+        "fields": {
+            "category": 2,
+            "names": "Blog",
+            "names_en": "Blog",
+            "names_ru": "Блог",
+            "names_hy": "Բլոգ",
+            "descriptions": null,
+            "descriptions_en": null,
+            "descriptions_ru": null,
+            "descriptions_hy": null,
+            "slug": "blog",
+            "img": "default.jpg",
+            "url": "http://127.0.0.1:8000/futur/blog/",
+            "publish": true
+        }
+    },
+    {
+        "model": "futur.futur",
+        "pk": 7,
+        "fields": {
+            "category": 2,
+            "names": "Glovo Prime",
+            "names_en": "Glovo Prime",
+            "names_ru": "Глово Прайм",
+            "names_hy": "Glovo Prime",
+            "descriptions": null,
+            "descriptions_en": null,
+            "descriptions_ru": null,
+            "descriptions_hy": null,
+            "slug": "glovo-prime",
+            "img": "default.jpg",
+            "url": "http://127.0.0.1:8000/futur/glovo-prime/",
+            "publish": true
+        }
+    },
+    {
+        "model": "futur.futur",
+        "pk": 8,
+        "fields": {
+            "category": 2,
+            "names": "FAQ",
+            "names_en": "FAQ",
+            "names_ru": "Часто задаваемые вопросы",
+            "names_hy": "Հաճախ տրվող հարցեր",
+            "descriptions": null,
+            "descriptions_en": null,
+            "descriptions_ru": null,
+            "descriptions_hy": null,
+            "slug": "faq",
+            "img": "default.jpg",
+            "url": "http://127.0.0.1:8000/futur/faq/",
+            "publish": true
+        }
+    }
+]
