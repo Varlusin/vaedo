@@ -5,6 +5,17 @@ from shapely.strtree import STRtree
 from django.conf import settings
 import os
 
+class ServiceAvailableSpaceConst:
+    def __init__(self):
+        self.min_lat= 43.76
+        self.max_lat= 43.9264
+        self.min_lng= 40.706
+        self.max_lng = 40.855
+    
+    def _check_cord(self, lat:float, lng:float)->bool:
+        return self.min_lat<= lat <= self.max_lat and self.min_lng<= lng<= self.max_lng
+
+
 
 class SpatialService:
     def __init__(self):
@@ -98,3 +109,5 @@ class SpatialService:
 
 
 spatial_service = SpatialService()
+
+SASC =  ServiceAvailableSpaceConst()

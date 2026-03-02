@@ -18,6 +18,7 @@ services:
     volumes:
       - .:/vaedo
     environment:
+      - PYTHONUNBUFFERED=1  # <--- Ավելացրեք սա պռինտ տեսնելու համար
       - PYTHONPATH=/vaedo
       - DB_HOST=database
       - DJANGO_SETTINGS_MODULE=vaedo.settings

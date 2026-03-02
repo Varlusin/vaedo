@@ -1,7 +1,18 @@
 import re
-from typing import Optional, Tuple
+from typing import Optional, Tuple, TypedDict
 
-# --- PRECOMPILED REGEX (module load time) ---
+from location.spatial_service import SASC, spatial_service
+
+from shapely.geometry import Point as ShapelyPoint
+
+# Սահմանում ենք բառարանի կառուցվածքը
+class LocationData(TypedDict):
+    latitude: float
+    longitude: float
+    point: ShapelyPoint
+
+
+
 
 DECIMAL_RE = r'-?\d+(?:[.,]\d+)?'
 
@@ -19,8 +30,6 @@ DMS_RE = re.compile(
     re.IGNORECASE
 )
 
-# --- HELPERS ---
-
 def _dms_to_decimal(deg, minutes, seconds, direction):
     value = float(deg) + float(minutes)/60 + float(seconds)/3600
     if direction.upper() in ('S', 'W'):
@@ -32,32 +41,42 @@ def _normalize(number_str: str) -> float:
     return float(number_str.replace(',', '.'))
 
 
-def _is_valid(lat: float, lng: float) -> bool:
-    return -90 <= lat <= 90 and -180 <= lng <= 180
+def _is_valid(lat: float, lng: float) -> Tuple[bool, Optional[LocationData]]:
+    if not SASC._check_cord(lat=lat, lng=lng):
+        if SASC._check_cord(lat=lng, lng=lat):
+            lat, lng = lng, lat
+        else: return False, None
+    point = ShapelyPoint(lat, lng)
+    if  spatial_service.check_avelable(point=point):
+        validated_data = {"latitude": lat, "longitude": lng, "point":point}
+        return True,  validated_data 
+    return False, None
 
 
-# --- PUBLIC API ---
 
-def parse_coordinates(text: str) -> Tuple[bool, Optional[Tuple[float, float]]]:
+def parse_coordinates(text: str) -> Tuple[bool, Optional[LocationData]]:
 
     # geo:
     for m in GEO_RE.finditer(text):
         lat, lng = _normalize(m.group(1)), _normalize(m.group(2))
-        if _is_valid(lat, lng):
-            return True, (lat, lng)
+        is_valid, data  = _is_valid(lat=lat, lng=lng)
+        if is_valid:
+            return True, data
 
     # DMS
     dms_matches = list(DMS_RE.finditer(text))
     if len(dms_matches) >= 2:
         lat = _dms_to_decimal(*dms_matches[0].groups())
         lng = _dms_to_decimal(*dms_matches[1].groups())
-        if _is_valid(lat, lng):
-            return True, (lat, lng)
+        is_valid, data  = _is_valid(lat=lat, lng=lng)
+        if is_valid:
+            return True, data
 
     # Decimal
     for m in PAIR_RE.finditer(text):
         lat, lng = _normalize(m.group(1)), _normalize(m.group(2))
-        if _is_valid(lat, lng):
-            return True, (lat, lng)
+        is_valid, data  = _is_valid(lat=lat, lng=lng)
+        if is_valid:
+            return True, data
 
     return False, None
