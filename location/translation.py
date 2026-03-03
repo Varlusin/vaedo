@@ -1,4 +1,3 @@
-from django.forms import fields
 from modeltranslation.translator import translator, TranslationOptions
 from location.models import (
     locationAvailable,

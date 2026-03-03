@@ -1,5 +1,5 @@
-from pprint import pprint
-from django.db.models import F
+
+# from django.db.models import F
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import status
@@ -13,8 +13,11 @@ from location.utils.coordinates import parse_coordinates
 from location.utils.cordinaterequestdb import  CreateResponceByValidLocationData
 
 
+
+
+
 class FindLocationTxt(APIView):
-    def post(self, request):
+    def post(self, request)->Response:
         serializer = LocationSearchSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
@@ -45,17 +48,14 @@ class FindLocationTxt(APIView):
 
 
 class FindLocationLonLat(APIView):
-    def post(self, request):
+    def post(self, request)->Response:
         serializer = LocationRequestSerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response(
                 {"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
             )
-
-
-
         lang = request.LANGUAGE_CODE
-        resp = CreateResponceByValidLocationData(validated_data= serializer.validated_data, lang=lang)
+        resp = CreateResponceByValidLocationData(validated_data=serializer.validated_data, lang=lang) # type: ignore
         return resp.create_responce()
         

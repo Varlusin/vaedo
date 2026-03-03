@@ -5,8 +5,20 @@ from location.spatial_service import SASC, spatial_service
 
 from shapely.geometry import Point as ShapelyPoint
 
-# Սահմանում ենք բառարանի կառուցվածքը
+
 class LocationData(TypedDict):
+    """
+    Աշխարհագրական տվյալների տիպավորված բառարան:
+    
+    Օրինակ:
+    ```python
+    data: LocationData = {
+        "latitude": 40.1,
+        "longitude": 44.1,
+        "point": Point(44.1, 40.1)
+    }
+    ```
+    """
     latitude: float
     longitude: float
     point: ShapelyPoint
@@ -47,14 +59,46 @@ def _is_valid(lat: float, lng: float) -> Tuple[bool, Optional[LocationData]]:
             lat, lng = lng, lat
         else: return False, None
     point = ShapelyPoint(lat, lng)
-    if  spatial_service.check_avelable(point=point):
-        validated_data = {"latitude": lat, "longitude": lng, "point":point}
-        return True,  validated_data 
+    if spatial_service.check_avelable(point=point):
+        validated_data: LocationData = {
+            "latitude": lat,
+            "longitude": lng,
+            "point": point
+        }
+        return True, validated_data
     return False, None
 
 
 
 def parse_coordinates(text: str) -> Tuple[bool, Optional[LocationData]]:
+    """
+    Տեքստից ստանում է կորդինատնէր այնուհետև   
+    ստուգում է կորդինատների իսքությունը 
+    կորդինատներից ստանում է կետ
+    ստուգում է կետի իսքությունը 
+    մինչև այն որ կետը պատկանի նախորոք ունեցած ծառայության հասանելի տարածքին 
+    եթե բոլոր ստուգումները բավարարվում է հետ է վերադարձնում՝ (True, {կեդի կորդինատները}  )
+    հակառակ դեպքում՝ (False, None) 
+
+    ### ՕՐԻՆԱԿՆԵՐ՝
+        ```python
+            >>>print(parse_coordinates(text="40.785273 43.841774"))
+            (True, {'latitude': 40.785273, 'longitude': 43.841774, 'point': <POINT (40.785 43.842)>})
+
+            >>>print(parse_coordinates(text="40,785273,43,841774"))
+            (True, {'latitude': 40.785273, 'longitude': 43.841774, 'point': <POINT (40.785 43.842)>})
+
+            >>>print(parse_coordinates(text="geo:40.785273,43.841774"))
+            (True, {'latitude': 40.785273, 'longitude': 43.841774, 'point': <POINT (40.785 43.842)>})
+
+            >>>print(parse_coordinates(text="40°47'07\" N 43°50'30\" E"))
+            (True, {'latitude': 40.785273, 'longitude': 43.841774, 'point': <POINT (40.785 43.842)>})
+
+            >>>print(parse_coordinates(text="գյումրի 10/1 40,785273"))
+            (False, None)
+        ```
+
+    """
 
     # geo:
     for m in GEO_RE.finditer(text):

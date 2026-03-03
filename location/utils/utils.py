@@ -1,21 +1,34 @@
 from django.utils.translation import gettext_lazy as _
 
+from typing import Optional, TypedDict, List, Dict
+
+
+class Geometry(TypedDict):
+    type: str  # "Point"
+    coordinates: List[float] # [longitude, latitude]
+
+class Properties(TypedDict):
+    building:   str|None
+    adres: str
+
+class Feature(TypedDict):
+    type: str # "Feature"
+    properties: Properties
+    geometry: Geometry
+
+class GeojsonResponse(TypedDict):
+    type: str # "FeatureCollection"
+    features: List[Feature]
+
+
+
 def create_responce(
     round_cords: str,
     sity: str,
-    db_obj_list: list = None,
-    latitude: float = None,
-    longitude: float = None,
-) -> dict[
-    str,
-    list[
-        dict[
-            str,
-            dict,
-            dict,
-        ]
-    ],
-]:
+    latitude: float,
+    longitude: float,
+    db_obj_list: Dict|None = None,
+) -> Optional[GeojsonResponse]:
     try:
         if db_obj_list:
             building = db_obj_list["building"]
@@ -29,7 +42,7 @@ def create_responce(
                 sity = sity + " " + round_cords
         else:
             sity = sity + " " + round_cords
-            building =None
+            building = None
 
         return {
             "type": "FeatureCollection",
