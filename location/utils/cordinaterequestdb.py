@@ -7,7 +7,7 @@ from django.db.models import F
 from rest_framework.response import Response
 from rest_framework import status
 
-from location.utils.utils import create_responce as GeoJsonSerializer
+from location.utils.geojsonrender import GEOJSONRender
 from location.models import Building
 from location.spatial_service import spatial_service
 
@@ -46,7 +46,7 @@ class CreateResponceByValidLocationData:
         city_id, city_data = spatial_service.find_city(point=self.point)
         if not city_id:
             return Response(
-                GeoJsonSerializer(
+                GEOJSONRender(
                     self._get_rounded_coords(),
                     sity= _("Shirak region"),
                     latitude=self.lat,
@@ -71,7 +71,7 @@ class CreateResponceByValidLocationData:
 
         db_data = next(iter(qs), None)
         return Response(
-            GeoJsonSerializer(
+            GEOJSONRender(
                 round_cords=self._get_rounded_coords(),
                 sity=sity,
                 db_obj_list=db_data,

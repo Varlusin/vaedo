@@ -22,7 +22,7 @@ class GeojsonResponse(TypedDict):
 
 
 
-def create_responce(
+def GEOJSONRender(
     round_cords: str,
     sity: str,
     latitude: float,
