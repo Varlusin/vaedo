@@ -10,12 +10,20 @@ from location.serializers import LocationRequestSerializer, LocationSearchSerial
 
 from location.utils.coordinates import parse_coordinates
 from location.utils.cordinaterequestdb import CreateResponceByValidLocationData
+from location.utils.geojsonrender import GEOJSONRender
 
-import asyncio
+from TextProcessing import _unicodelowersplit as uls
+
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
+
+import time
+
+from pprint import pprint
 
 
 class FindLocationTxt(APIView):
-    async def post(self, request) -> Response:
+    def post(self, request) -> Response:
+        start_time = time.time()
         serializer = LocationSearchSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
@@ -30,54 +38,54 @@ class FindLocationTxt(APIView):
                 {"warning": _("the query is the same")},
                 status=status.HTTP_200_OK,
             )
-        
         request.session["last_query"] = new_query
 
-        # 1. Ստեղծում ենք Task-երը
-        task_cord = asyncio.create_task(parse_coordinates(new_query))
-        task_text = asyncio.create_task(self.process_text_search(new_query, old_query))
+        with ThreadPoolExecutor(max_workers=2) as ex:
+            future_map = {
+                ex.submit(check_cord, new_query): "cord",
+                ex.submit(primary_processing, new_query): "primary_processing",
+            }
+        paralel_rezults = {}
+        for future in as_completed(future_map):
+            result = future.result()
+            source = future_map[future]
+            paralel_rezults[source] = result
 
-        # 2. Սպասում ենք առաջինն ավարտվածին
-        done, pending = await asyncio.wait(
-            [task_cord, task_text], return_when=asyncio.FIRST_COMPLETED
-        )
-
-        lang = request.LANGUAGE_CODE
-
-        # ՍՏՈՒԳՈՒՄ 1: Եթե կորդինատների task-ն է ավարտվել (կամ երկուսն էլ)
-        if task_cord in done:
-            is_cord, data = task_cord.result() # Արդեն ավարտված է, await պետք չէ
-            if is_cord:
-                task_text.cancel() # Դադարեցնում ենք տեքստայինը
-                resp_obj = CreateResponceByValidLocationData(validated_data=data, lang=lang)
-                return resp_obj.create_responce() # Վերադարձնում է Response օբյեկտ
-            
-            # Եթե կորդինատ չէր, սպասում ենք տեքստայինին
-            text_result = await task_text
-            return Response(text_result)
-
-        # ՍՏՈՒԳՈՒՄ 2: Եթե տեքստայինն է ավարտվել առաջինը
-        else:
-            # Քանի որ մեզ կորդինատն ավելի կարևոր է, սպասում ենք դրան
-            is_cord, data = await task_cord
-            if is_cord:
-                resp_obj = CreateResponceByValidLocationData(validated_data=data, lang=lang)
-                return resp_obj.create_responce()
-            else:
-                # Եթե կորդինատ չէր, վերցնում ենք արդեն ավարտված տեքստայինի արդյունքը
-                text_result = task_text.result()
-                return Response(text_result)
-
-    async def process_text_search(self, n_qw: str, old_qw: str):
-        # Սա վերադարձնում է dict, այլ ոչ թե Response
-        return {"new_query": n_qw, "old_query": old_qw}
-    
+        if paralel_rezults["cord"] is not None:
+            return Response(
+                data={
+                    "adr": GEOJSONRender(**paralel_rezults["cord"]),
+                    "time": (time.time() - start_time) * 1000,
+                },
+                status=status.HTTP_200_OK,
+            )
+        return Response({"type": new_query, "time": (time.time() - start_time) * 1000})
 
 
+def primary_processing(txt: str):
+    quetr_token = uls(txt)
+    print(quetr_token)
 
 
+def check_cord(txt: str, lang="en"):
+    is_cord, data = parse_coordinates(txt)
+    if is_cord:
+        resp = CreateResponceByValidLocationData(validated_data=data, lang=lang)
+        rezult_ = resp.create_responce()
+        return rezult_
+    return None
 
 
+def adres_search(txt: str, lang="en"):
+    return {
+        "type": "adres_search",
+    }
+
+
+def spetial_adres_search(txt: str, lang="en"):
+    return {
+        "type": "spetial_adres_search",
+    }
 
 
 class FindLocationLonLat(APIView):
@@ -90,4 +98,8 @@ class FindLocationLonLat(APIView):
             )
         lang = request.LANGUAGE_CODE
         resp = CreateResponceByValidLocationData(validated_data=serializer.validated_data, lang=lang)  # type: ignore
-        return resp.create_responce()
+        rezult_ = resp.create_responce()
+        return Response(
+            data=GEOJSONRender(**rezult_),
+            status=status.HTTP_200_OK,
+        )

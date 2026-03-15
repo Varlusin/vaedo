@@ -2,6 +2,7 @@ import re
 from typing import Optional, Tuple, TypedDict
 
 from location.spatial_service import SASC, spatial_service
+from location.spatial_service import ServiceAvailableSpaceConst
 
 from shapely.geometry import Point as ShapelyPoint
 
@@ -9,7 +10,7 @@ from shapely.geometry import Point as ShapelyPoint
 class LocationData(TypedDict):
     """
     Աշխարհագրական տվյալների տիպավորված բառարան:
-    
+
     Օրինակ:
     ```python
     data: LocationData = {
@@ -19,66 +20,152 @@ class LocationData(TypedDict):
     }
     ```
     """
+
     latitude: float
     longitude: float
     point: ShapelyPoint
 
 
+class ParseCoordinates(ServiceAvailableSpaceConst):
+    def __init__(self):
+        self.DECIMAL_RE = r"-?\d+(?:[.,]\d+)?"
+        self.DMS_RE = re.compile(
+                                  r"(\d+)[°\s]+(\d+)[\'\s]+(\d+(?:\.\d+)?)[\"\s]*([NSEW])", re.IGNORECASE
+                                )
+        self.PAIR_RE = re.compile(
+                                  rf"(?<!/)\b({self.DECIMAL_RE})\b(?!/)[,\s]+(?<!/)\b({self.DECIMAL_RE})\b(?!/)"
+                                  )
+        self.GEO_RE = re.compile(rf"geo:\s*({self.DECIMAL_RE})\s*,\s*({self.DECIMAL_RE})", re.IGNORECASE)
+        
+        super().__init__()
+
+    def _dms_to_decimal(self, deg, minutes, seconds, direction):
+        value = float(deg) + float(minutes) / 60 + float(seconds) / 3600
+        if direction.upper() in ("S", "W"):
+            value *= -1
+        return value
+    
+    def _normalize(self, number_str: str) -> float:
+        return float(number_str.replace(",", "."))
+
+    def _is_valid(self, lat: float, lng: float) -> Optional[LocationData]:
+        if not self._check_cord(lat=lat, lng=lng):
+            if self._check_cord(lat=lng, lng=lat):
+                lat, lng = lng, lat
+            else:
+                return None
+        point = ShapelyPoint(lat, lng)
+        if spatial_service.check_avelable(point=point):
+            validated_data: LocationData = {
+                "latitude": lat,
+                "longitude": lng,
+                "point": point,
+            }
+            return validated_data
+        return  None
+
+    def parse_coordinates(self, text: str) -> Optional[LocationData]:
+        """
+        Տեքստից ստանում է կորդինատնէր այնուհետև
+        ստուգում է կորդինատների իսքությունը
+        կորդինատներից ստանում է կետ
+        ստուգում է կետի իսքությունը
+        մինչև այն որ կետը պատկանի նախորոք ունեցած ծառայության հասանելի տարածքին
+        եթե բոլոր ստուգումները բավարարվում է հետ է վերադարձնում՝ (True, {կեդի կորդինատները}  )
+        հակառակ դեպքում՝ (False, None)
+
+        ### ՕՐԻՆԱԿՆԵՐ՝
+            ```python
+                >>> parce_cord = ParseCoordinates()
+                >>>print(parce_cord.parse_coordinates(text="40.785273 43.841774"))
+                (True, {'latitude': 40.785273, 'longitude': 43.841774, 'point': <POINT (40.785 43.842)>})
+
+                >>>print(parce_cord.parse_coordinates(text="40,785273,43,841774"))
+                (True, {'latitude': 40.785273, 'longitude': 43.841774, 'point': <POINT (40.785 43.842)>})
+
+                >>>print(parce_cord.parse_coordinates(text="geo:40.785273,43.841774"))
+                (True, {'latitude': 40.785273, 'longitude': 43.841774, 'point': <POINT (40.785 43.842)>})
+
+                >>>print(parce_cord.parse_coordinates(text="40°47'07\" N 43°50'30\" E"))
+                (True, {'latitude': 40.785273, 'longitude': 43.841774, 'point': <POINT (40.785 43.842)>})
+
+                >>>print(parce_cord.parse_coordinates(text="գյումրի 10/1 40,785273"))
+                (False, None)
+            ```
+
+        """
+        data = None
+        # Decimal
+        for m in self.PAIR_RE.finditer(text):
+            lat, lng = self._normalize(m.group(1)), self._normalize(m.group(2))
+            data = self._is_valid(lat=lat, lng=lng)
+            if data:               
+                return data
+
+        # DMS
+        dms_matches = list(self.DMS_RE.finditer(text))
+        if len(dms_matches) >= 2:
+            lat = self._dms_to_decimal(*dms_matches[0].groups())
+            lng = self._dms_to_decimal(*dms_matches[1].groups())
+            data = self._is_valid(lat=lat, lng=lng)
+        if data:            
+            return data
+                
+        return data
 
 
-DECIMAL_RE = r'-?\d+(?:[.,]\d+)?'
+DECIMAL_RE = r"-?\d+(?:[.,]\d+)?"
 
-GEO_RE = re.compile(
-    rf'geo:\s*({DECIMAL_RE})\s*,\s*({DECIMAL_RE})',
-    re.IGNORECASE
-)
+GEO_RE = re.compile(rf"geo:\s*({DECIMAL_RE})\s*,\s*({DECIMAL_RE})", re.IGNORECASE)
 
 PAIR_RE = re.compile(
-    rf'(?<!/)\b({DECIMAL_RE})\b(?!/)[,\s]+(?<!/)\b({DECIMAL_RE})\b(?!/)'
+    rf"(?<!/)\b({DECIMAL_RE})\b(?!/)[,\s]+(?<!/)\b({DECIMAL_RE})\b(?!/)"
 )
 
 DMS_RE = re.compile(
-    r'(\d+)[°\s]+(\d+)[\'\s]+(\d+(?:\.\d+)?)[\"\s]*([NSEW])',
-    re.IGNORECASE
+    r"(\d+)[°\s]+(\d+)[\'\s]+(\d+(?:\.\d+)?)[\"\s]*([NSEW])", re.IGNORECASE
 )
 
+
 def _dms_to_decimal(deg, minutes, seconds, direction):
-    value = float(deg) + float(minutes)/60 + float(seconds)/3600
-    if direction.upper() in ('S', 'W'):
+    value = float(deg) + float(minutes) / 60 + float(seconds) / 3600
+    if direction.upper() in ("S", "W"):
         value *= -1
     return value
 
 
 def _normalize(number_str: str) -> float:
-    return float(number_str.replace(',', '.'))
+    return float(number_str.replace(",", "."))
 
 
 def _is_valid(lat: float, lng: float) -> Tuple[bool, Optional[LocationData]]:
     if not SASC._check_cord(lat=lat, lng=lng):
         if SASC._check_cord(lat=lng, lng=lat):
             lat, lng = lng, lat
-        else: return False, None
+        else:
+            return False, None
     point = ShapelyPoint(lat, lng)
     if spatial_service.check_avelable(point=point):
         validated_data: LocationData = {
             "latitude": lat,
             "longitude": lng,
-            "point": point
+            "point": point,
         }
         return True, validated_data
     return False, None
 
 
 
+
 def parse_coordinates(text: str) -> Tuple[bool, Optional[LocationData]]:
     """
-    Տեքստից ստանում է կորդինատնէր այնուհետև   
-    ստուգում է կորդինատների իսքությունը 
+    Տեքստից ստանում է կորդինատնէր այնուհետև
+    ստուգում է կորդինատների իսքությունը
     կորդինատներից ստանում է կետ
-    ստուգում է կետի իսքությունը 
-    մինչև այն որ կետը պատկանի նախորոք ունեցած ծառայության հասանելի տարածքին 
+    ստուգում է կետի իսքությունը
+    մինչև այն որ կետը պատկանի նախորոք ունեցած ծառայության հասանելի տարածքին
     եթե բոլոր ստուգումները բավարարվում է հետ է վերադարձնում՝ (True, {կեդի կորդինատները}  )
-    հակառակ դեպքում՝ (False, None) 
+    հակառակ դեպքում՝ (False, None)
 
     ### ՕՐԻՆԱԿՆԵՐ՝
         ```python
@@ -103,7 +190,7 @@ def parse_coordinates(text: str) -> Tuple[bool, Optional[LocationData]]:
     # geo:
     for m in GEO_RE.finditer(text):
         lat, lng = _normalize(m.group(1)), _normalize(m.group(2))
-        is_valid, data  = _is_valid(lat=lat, lng=lng)
+        is_valid, data = _is_valid(lat=lat, lng=lng)
         if is_valid:
             return True, data
 
@@ -112,14 +199,14 @@ def parse_coordinates(text: str) -> Tuple[bool, Optional[LocationData]]:
     if len(dms_matches) >= 2:
         lat = _dms_to_decimal(*dms_matches[0].groups())
         lng = _dms_to_decimal(*dms_matches[1].groups())
-        is_valid, data  = _is_valid(lat=lat, lng=lng)
+        is_valid, data = _is_valid(lat=lat, lng=lng)
         if is_valid:
             return True, data
 
     # Decimal
     for m in PAIR_RE.finditer(text):
         lat, lng = _normalize(m.group(1)), _normalize(m.group(2))
-        is_valid, data  = _is_valid(lat=lat, lng=lng)
+        is_valid, data = _is_valid(lat=lat, lng=lng)
         if is_valid:
             return True, data
 

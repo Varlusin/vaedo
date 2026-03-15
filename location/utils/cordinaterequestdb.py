@@ -1,4 +1,3 @@
-from location.utils.coordinates import LocationData
 
 from django.utils.translation import gettext_lazy as _
 
@@ -7,6 +6,7 @@ from django.db.models import F
 from rest_framework.response import Response
 from rest_framework import status
 
+from location.utils.coordinates import LocationData
 from location.utils.geojsonrender import GEOJSONRender
 from location.models import Building
 from location.spatial_service import spatial_service
@@ -14,8 +14,8 @@ from location.spatial_service import spatial_service
 from typing import cast
 
 #  այս իմպորտները պետք են միայն հարցումները տպելու համար
-# from django.db import connection
-# from pprint import pprint
+from django.db import connection
+from pprint import pprint
 
 #
 
@@ -45,16 +45,23 @@ class CreateResponceByValidLocationData:
         """
         city_id, city_data = spatial_service.find_city(point=self.point)
         if not city_id:
-            return Response(
-                GEOJSONRender(
-                    self._get_rounded_coords(),
-                    sity= _("Shirak region"),
-                    latitude=self.lat,
-                    longitude=self.lon,
-                    db_obj_list=None,
-                ),
-                status=status.HTTP_200_OK,
-            )
+            return {
+                    "round_cords":self._get_rounded_coords(),
+                    "sity": _("Shirak region"),
+                    "latitude":self.lat,
+                    "longitude":self.lon,
+                    "db_obj_list":None,
+                }
+            # return Response(
+            #     GEOJSONRender(
+            #         self._get_rounded_coords(),
+            #         sity= _("Shirak region"),
+            #         latitude=self.lat,
+            #         longitude=self.lon,
+            #         db_obj_list=None,
+            #     ),
+            #     status=status.HTTP_200_OK,
+            # )
         geometry__contains = f"POINT({self.lat} {self.lon})"
         sity =cast(str, city_data.get(f"city_{self.lang}") if city_data else city_data["city"])  # type: ignore
         district = None
@@ -70,14 +77,21 @@ class CreateResponceByValidLocationData:
         )
 
         db_data = next(iter(qs), None)
-        return Response(
-            GEOJSONRender(
-                round_cords=self._get_rounded_coords(),
-                sity=sity,
-                db_obj_list=db_data,
-                latitude=self.lat,
-                longitude=self.lon,
-            ),
-            status=status.HTTP_200_OK,
-        )
+        pprint(connection.queries)
+        return { "round_cords":self._get_rounded_coords(),
+                "sity": sity,
+                "db_obj_list":db_data,
+                "latitude":self.lat,
+                "longitude":self.lon,
+                }
+        # return Response(
+        #     GEOJSONRender(
+        #         round_cords=self._get_rounded_coords(),
+        #         sity=sity,
+        #         db_obj_list=db_data,
+        #         latitude=self.lat,
+        #         longitude=self.lon,
+        #     ),
+        #     status=status.HTTP_200_OK,
+        # )
 

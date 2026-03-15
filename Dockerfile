@@ -17,16 +17,18 @@ ENV C_INCLUDE_PATH=/usr/include/gdal
 ENV PYTHONPATH=/vaedo
 ENV DJANGO_SETTINGS_MODULE=vaedo.settings
 
-COPY requirements.txt /vaedo/
+COPY . /vaedo
+# COPY requirements.txt /vaedo/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
+# COPY ./txtmining ./txtmining
+RUN pip install --no-cache-dir ./txtmining
 RUN pip install "django-allauth[socialaccount]"
 RUN pip install "django-environ"
 RUN pip install "django-cors-headers"
 RUN pip install "djangorestframework-gis"
 
 
-COPY . /vaedo
 
 
 

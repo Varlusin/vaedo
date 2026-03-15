@@ -21,7 +21,7 @@ GOOGLE_OAUTH_CALLBACK_URL = env("GOOGLE_OAUTH_CALLBACK_URL")
 
 SITE_ID = 1
 
-ALLOWED_HOSTS = ["192.168.10.18", "192.168.10.19", "192.168.10.20",  "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["192.168.10.18", "192.168.10.19", "192.168.10.20", "192.168.10.29", "127.0.0.1", "localhost"]
 
 INSTALLED_APPS = [
     "django.contrib.auth",
