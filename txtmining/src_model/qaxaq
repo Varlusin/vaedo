@@ -1,0 +1,113 @@
+qaxaq, gyux, city, gorod
+
+N = 2
+
+qaxaq
+
+azatan
+
+
+q -> 0, 4 indexs   => tf(q) = 2/7     => tf_idf = 2/7 * log(4)
+a -> 1, 3 indexs   => tf(a) = 2/7     => tf_idf = 2/7 * log(4)
+x -> 2 index        => tf(x) = 1/7    => tf_idf = 1/7 * log(2)
+qa -> 0 index       => tf(qa) = 1/7   => tf_idf = 1/7 * log(4)
+ax -> 1 index       => tf(ax) = 1/7   => tf_idf = 1/7 * log(4)
+xa -> 2 index       => tf(xa) = 1/7   => tf_idf = 2/7 * log(4)
+aq -> 3 index       => tf(aq) = 1/7   => tf_idf = 2/7 * log(4)
+
+gyux
+
+g -> 0 index   => tf(g) = 1/7 
+y -> 1 index   => tf(y) = 1/7 
+u -> 2 index   => tf(u) = 1/7 
+x -> 3 index   => tf(x) = 1/7 
+gy -> 0 index  => tf(gy) = 1/7 
+yu -> 1 index  => tf(yu) = 1/7 
+ux -> 2 index  => tf(ux) = 1/7 
+
+city
+
+c -> 0 index   => tf(c) = 1/7 
+i -> 1 index   => tf(i) = 1/7 
+t -> 2 index   => tf(t) = 1/7 
+y -> 3 index   => tf(y) = 1/7 
+ci -> 0 index  => tf(ci) = 1/7 
+it -> 1 index  => tf(it) = 1/7 
+ty -> 2 index  => tf(ty) = 1/7 
+
+gorod
+
+g -> 0 index       => tf(g) = 1/8 
+o -> 1, 3 indexs   => tf(o) = 8/8 
+r -> 2 index       => tf(r) = 1/8 
+d -> 3 index       => tf(d) = 1/8 
+go -> 0 index      => tf(go) = 1/8 
+or -> 1 index      => tf(or) = 1/8 
+ro -> 2 index      => tf(ro) = 1/8 
+od -> 3 index      => tf(od) = 1/8 
+
+idf(q) = log(4)
+idf(a) = log(4)
+idf(x) = log(2)
+idf(g) = log(2)
+idf(y) = log(2)
+idf(u) = log(4)
+idf(c) = log(4)
+idf(i) = log(4)
+idf(t) = log(4)
+idf(o) = log(4)
+idf(r) = log(4)
+idf(d) = log(4)
+
+
+
+idf(qa) = log(4)
+idf(ax) = log(4)
+idf(xa) = log(4)
+idf(aq) = log(4)
+idf(gy) = log(4)
+idf(yu) = log(4)
+idf(ux) = log(4)
+idf(ci) = log(4)
+idf(it) = log(4)
+idf(ty) = log(4)
+idf(go) = log(4)
+idf(or) = log(4)
+idf(ro) = log(4)
+idf(od) = log(4)
+
+vocab_ = q : 1, a : 2, x:3, c:4, i:5, t:6, y:7, .......... od: 50
+
+qaxaq:1, gyux:2, city:3, gorod:4
+
+bar         | 1     | 2     | 3     | 4     |  ..... | 50     |
+-----------------------------------------------------------------------------------------------------  
+qaxaq       |0.5648 |5.2654 |0.0000 |0.0000 | ...... | 0.0000 |
+            | 0, 3  | 2     |       |       | ...... |        |
+
+...............................................................
+
+
+new_query = kaghaq
+
+
+new_query grams
+
+k -> 0 
+a -> 1, 4
+g -> 2
+h -> 3
+q -> 5
+
+
+new_query   | 1     | 2     | 3     | 4     |  ..... | 50     |
+-----------------------------------------------------------------------------------------------------  
+kaghaq      |  5    | 1,4   |       |  2    | ...... |        |
+
+
+
+score = SUM(tf_idf(B)*tf_idf(Q)* 1/(abs(diferent index qur and baza) +1 ) )
+
+
+
+
